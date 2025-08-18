@@ -12,18 +12,21 @@ from .functions import Functions
 def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> None:
     fns = Functions(args)
     try:
-        conversation: openai.types.responses.ResponseInputParam = [
+        conversation = [
             {"role": "user", "content": prompt}
         ]
         while True:
-            completion = client.responses.create(
+            completion = client.chat.completions.create(
                 model=args.llm,
-                input=conversation,
-                tools=fns.as_tools(),
+                messages=conversation,
+                #tools=fns.as_tools(),
                 timeout=args.timeout,
             )
 
-            for message in completion.output:
+            msg = completion.choices[0].message
+            print(llm_utils.word_wrap_except_code_blocks(msg.content))
+            conversation.append({"role": msg.role, "content": msg.content})
+            """ for message in completion.output:
                 if message.type == "message":
                     if len(message.content) != 1:
                         print(
@@ -50,7 +53,8 @@ def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> No
                     sys.exit(1)
 
             if len([m for m in completion.output if m.type == "function_call"]) == 0:
-                break
+                break """
+            break
 
         return None
     except openai.NotFoundError as e:
