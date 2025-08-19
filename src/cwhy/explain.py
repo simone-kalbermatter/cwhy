@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import time
 
 import llm_utils
 import openai
@@ -16,12 +17,15 @@ def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> No
             {"role": "user", "content": prompt}
         ]
         while True:
+            print(f"LOG {time.time()}: Sending request to the LLM")
             completion = client.chat.completions.create(
                 model=args.llm,
                 messages=conversation,
                 #tools=fns.as_tools(),
                 timeout=args.timeout,
+                temperature=0.0
             )
+            print(f"LOG {time.time()}: Received reply")
 
             msg = completion.choices[0].message
             print(llm_utils.word_wrap_except_code_blocks(msg.content))
