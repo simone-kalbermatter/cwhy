@@ -4,14 +4,14 @@ import sys
 import time
 
 def main(args: argparse.Namespace) -> None:
-    print(f"LOG {time.time()}: Executing user command")
+    print(f"__LOG__ {time.time()}: Executing user command")
     process = subprocess.run(
         args.command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
     )
-    print(f"LOG {time.time()}: Finished executing user command")
+    print(f"__LOG__ {time.time()}: Finished executing user command")
     if process.returncode == 0:
         return
 
@@ -30,10 +30,12 @@ def main(args: argparse.Namespace) -> None:
     print(f"CWhy ({args.llm})")
     print("==================================================")
 
+    print(f"__INFO__ {time.time()}: Importing explain")
     from . import explain
 
+    print(f"__INFO__ {time.time()}: Starting explain")
     explain.explain(args, stdin)
 
     print("==================================================")
-    print(f"LOG {time.time()}: Processed reply")
+    print(f"__LOG__ {time.time()}: Processed reply")
     sys.exit(process.returncode)

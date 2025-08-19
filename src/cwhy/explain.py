@@ -17,7 +17,7 @@ def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> No
             {"role": "user", "content": prompt}
         ]
         while True:
-            print(f"LOG {time.time()}: Sending request to the LLM")
+            print(f"__LOG__ {time.time()}: Sending request to the LLM")
             completion = client.chat.completions.create(
                 model=args.llm,
                 messages=conversation,
@@ -25,7 +25,7 @@ def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> No
                 timeout=args.timeout,
                 temperature=0.0
             )
-            print(f"LOG {time.time()}: Received reply")
+            print(f"__LOG__ {time.time()}: Received reply")
 
             msg = completion.choices[0].message
             print(llm_utils.word_wrap_except_code_blocks(msg.content))
@@ -74,6 +74,7 @@ def complete(client: openai.OpenAI, args: argparse.Namespace, prompt: str) -> No
 
 
 def evaluate(client: openai.OpenAI, args: argparse.Namespace, stdin: str) -> None:
+    print(f"__INFO__ {time.time()}: Creating prompt")
     evaluate_text_prompt(client, args, prompts.explain_prompt(args, stdin))
 
 
@@ -85,6 +86,7 @@ def explain(args: argparse.Namespace, stdin: str) -> None:
         # Pass a dummy API key on purpose:
         # None would make the OpenAI client throw an error.
         # A blank string will cause an invalid HTTP header error.
+        print(f"__INFO__ {time.time()}: Creating openai client")
         client = openai.OpenAI(
             api_key=os.environ.get("OPENAI_API_KEY", "OPENAI_API_KEY")
         )
